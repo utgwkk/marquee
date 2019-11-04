@@ -1,5 +1,6 @@
 extern crate ncurses;
 
+use std::{thread, time};
 use ncurses::*;
 
 fn get_terminal_size(win: WINDOW) -> (i32, i32) {
@@ -9,11 +10,21 @@ fn get_terminal_size(win: WINDOW) -> (i32, i32) {
     (width, height)
 }
 
+fn marquee(text: &str) {
+    let mut counter = 0;
+    loop {
+        let showtext = format!("{} {}", text, counter);
+        addstr(showtext.as_str());
+        refresh();
+        thread::sleep(time::Duration::from_millis(100));
+        clear();
+        refresh();
+        counter += 1;
+    }
+}
+
 fn main() {
     let window = initscr();
-    let (width, height) = get_terminal_size(window);
-    addstr(format!("width = {}, height = {}", width, height).as_str());
-    refresh();
-    getch();
+    marquee("Hello, world!");
     endwin();
 }
